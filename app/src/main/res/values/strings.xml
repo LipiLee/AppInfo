@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AppInfo</string>
+    <string name="app_icon">Application Icon</string>
 </resources>
