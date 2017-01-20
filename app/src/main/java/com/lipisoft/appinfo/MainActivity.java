@@ -1,21 +1,20 @@
 package com.lipisoft.appinfo;
 
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "AppInfo";
+    public static final String DETAIL_VIEW = "com.lipisoft.appinfo.DETAIL";
     private final AppInfoListAdapter mAdapter = new AppInfoListAdapter(this);
 
     @Override
@@ -23,8 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView listView = (ListView) findViewById(R.id.list);
-
+        final ListView listView = (ListView) findViewById(R.id.list);
         final PackageManager packageManager = getPackageManager();
         final List<PackageInfo> listPackageInfo = packageManager.getInstalledPackages(PackageManager.GET_META_DATA);
 
@@ -45,9 +43,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final AppInfoItem curItem = (AppInfoItem) mAdapter.getItem(position);
-                final String appName = curItem.getAppName();
 
-                Toast.makeText(getApplicationContext(), "Selected : " + appName, Toast.LENGTH_LONG).show();
+                final Intent intent = new Intent(MainActivity.this, AppInfoDetailActivity.class);
+                intent.putExtra(DETAIL_VIEW, curItem.getPackageName());
+                startActivity(intent);
             }
         });
-    }}
+    }
+}

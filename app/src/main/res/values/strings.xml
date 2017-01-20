@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">AppInfo</string>
-    <string name="app_icon">Application Icon</string>
+    <string name="app_name">App Info</string>
+    <string name="app_icon">App Icon</string>
 </resources>
