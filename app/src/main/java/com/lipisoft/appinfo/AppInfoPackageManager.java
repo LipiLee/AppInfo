@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 class AppInfoPackageManager {
-    @Nullable
+    @NonNull
     static PackageInfo getPackageInfo(@NonNull Context context, @NonNull String packageName) {
         final PackageManager packageManager = context.getPackageManager();
 //        final List<PackageInfo> packageInfoList = packageManager.getInstalledPackages(PackageManager.GET_META_DATA);
@@ -19,6 +19,6 @@ class AppInfoPackageManager {
                 return packageInfo;
             }
         }
-        return null;
+        throw new NullPointerException(context.getString(R.string.package_not_found));
     }
 }

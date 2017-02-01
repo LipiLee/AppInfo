@@ -3,15 +3,21 @@ package com.lipisoft.appinfo;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.StringBuilderPrinter;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AppInfoDetailActivity extends AppCompatActivity {
+    private ApplicationInfo applicationInfo;
+    private StringBuilder appInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,184 +26,240 @@ public class AppInfoDetailActivity extends AppCompatActivity {
         final TextView detailTextView = (TextView) findViewById(R.id.textView);
         final Intent intent = getIntent();
         final String packageName = intent.getStringExtra(MainActivity.DETAIL_VIEW);
-        final PackageInfo packageInfo = AppInfoPackageManager.getPackageInfo(this, packageName);
-
-        if (packageInfo == null) {
+        final PackageInfo packageInfo;
+        try {
+            packageInfo = AppInfoPackageManager.getPackageInfo(this, packageName);
+        } catch (NullPointerException e) {
+            Toast.makeText(this, packageName + " " + e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
             return;
         }
-        final ApplicationInfo applicationInfo = packageInfo.applicationInfo;
 
-        final StringBuilder sb = new StringBuilder();
+        applicationInfo = packageInfo.applicationInfo;
 
-        sb.append("Backup Agent Name: ");
+        detailTextView.setText(getAppInformation());
+
+//        final ImageView banner = (ImageView) findViewById(R.id.banner);
+        final ImageView icon = (ImageView) findViewById(R.id.icon);
+//        final ImageView logo = (ImageView) findViewById(R.id.logo);
+//        final ImageView unbadgedIcon = (ImageView) findViewById(R.id.unbadged_icon);
+
+        final PackageManager packageManager = getPackageManager();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+//            banner.setImageDrawable(applicationInfo.loadBanner(packageManager));
+//        }
+
+        icon.setImageDrawable(applicationInfo.loadIcon(packageManager));
+
+//        logo.setImageDrawable(applicationInfo.loadLogo(packageManager));
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+//            unbadgedIcon.setImageDrawable(applicationInfo.loadUnbadgedIcon(packageManager));
+//        }
+    }
+
+    private void addAppInfoItem(int resId, String name) {
+        appInfo.append(getString(resId));
+        addDelimiter(appInfo);
+        appInfo.append(name);
+        appInfo.append("\n");
+    }
+
+    private String getBackupAgentName() {
         if (applicationInfo.backupAgentName != null) {
-            sb.append(applicationInfo.backupAgentName);
+            return applicationInfo.backupAgentName;
         }
-        sb.append("\n");
+        return getString(R.string.not_available);
+    }
 
-        sb.append("Class Name: ");
+    private String getClassName() {
         if (applicationInfo.className != null) {
-            sb.append(applicationInfo.className);
+            return applicationInfo.className;
         }
-        sb.append("\n");
+        return getString(R.string.not_available);
+    }
 
-        sb.append("Compatible Width Limit DP: ")
-                .append(String.valueOf(applicationInfo.compatibleWidthLimitDp))
-                .append("\n");
+    private String getCompatibleWidthLimitDp() {
+        return Integer.toString(applicationInfo.compatibleWidthLimitDp);
+    }
 
-        sb.append("Description Resource ID: ")
-                .append(String.valueOf(applicationInfo.descriptionRes))
-                .append("\n");
-
-        sb.append("Data Directory: ");
+    private String getDataDirectory() {
         if (applicationInfo.dataDir != null) {
-            sb.append(applicationInfo.dataDir);
+            return applicationInfo.dataDir;
         }
-        sb.append("\n");
+        return getString(R.string.not_available);
+    }
+
+    private String getDescriptionResourceId() {
+        return Integer.toString(applicationInfo.descriptionRes);
+    }
+
+    private String getDeviceProtectedDataDirectory() {
+        if (applicationInfo.deviceProtectedDataDir != null) {
+            return applicationInfo.deviceProtectedDataDir;
+        }
+        return getString(R.string.not_available);
+    }
+
+    private String getEnabled() {
+        return String.valueOf(applicationInfo.enabled);
+    }
+
+    private String getAppInformation() {
+        appInfo = new StringBuilder();
+        final StringBuilderPrinter appInfoPrinter = new StringBuilderPrinter(appInfo);
+        applicationInfo.dump(appInfoPrinter, "");
+/*
+        addAppInfoItem(R.string.backup_agent_name, getBackupAgentName());
+
+        addAppInfoItem(R.string.class_name, getClassName());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            addAppInfoItem(R.string.compatible_width_limit_dp, getCompatibleWidthLimitDp());
+        }
+
+        addAppInfoItem(R.string.data_directory, getDataDirectory());
+
+        addAppInfoItem(R.string.description_resource_id, getDescriptionResourceId());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            sb.append("Device Protected Data Directory: ");
-            if (applicationInfo.deviceProtectedDataDir != null) {
-                sb.append(applicationInfo.deviceProtectedDataDir);
-            }
-            sb.append("\n");
+            addAppInfoItem(R.string.device_protected_data_directory, getDeviceProtectedDataDirectory());
         }
 
-        sb.append("Enable: ").append(String.valueOf(applicationInfo.enabled))
-                .append("\n");
+        addAppInfoItem(R.string.enabled, getEnabled());
 
-        sb.append("Flag: ")
+        appInfo.append("Flag: ")
                 .append(addListString(getFlags(applicationInfo.flags)))
                 .append("\n");
 
-        sb.append("Largest Width Limit DP: ")
+        appInfo.append("Largest Width Limit DP: ")
                 .append(String.valueOf(applicationInfo.largestWidthLimitDp))
                 .append("\n");
 
-        sb.append("Manage Space Activity Name: ");
+        appInfo.append("Manage Space Activity Name: ");
         if (applicationInfo.manageSpaceActivityName != null) {
-            sb.append(applicationInfo.manageSpaceActivityName);
+            appInfo.append(applicationInfo.manageSpaceActivityName);
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            sb.append("Minimum SDK Version: ")
+            appInfo.append("Minimum SDK Version: ")
                     .append(String.valueOf(applicationInfo.minSdkVersion))
                     .append("\n");
         }
 
-        sb.append("Native Library Directory: ");
+        appInfo.append("Native Library Directory: ");
         if (applicationInfo.nativeLibraryDir != null) {
-            sb.append(applicationInfo.nativeLibraryDir);
+            appInfo.append(applicationInfo.nativeLibraryDir);
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
-        sb.append("Permission: ");
+        appInfo.append("Permission: ");
         if (applicationInfo.permission != null) {
-            sb.append(applicationInfo.permission);
+            appInfo.append(applicationInfo.permission);
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
-        sb.append("Process Name: ");
+        appInfo.append("Process Name: ");
         if (applicationInfo.processName != null) {
-            sb.append(applicationInfo.processName);
+            appInfo.append(applicationInfo.processName);
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
-        sb.append("Public Source Directory: ");
+        appInfo.append("Public Source Directory: ");
         if (applicationInfo.publicSourceDir != null) {
-            sb.append(applicationInfo.publicSourceDir);
+            appInfo.append(applicationInfo.publicSourceDir);
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
-        sb.append("Requires Smallest Width DP: ")
+        appInfo.append("Requires Smallest Width DP: ")
                 .append(String.valueOf(applicationInfo.requiresSmallestWidthDp))
                 .append("\n");
 
-        sb.append("Shared Library Files: ");
+        appInfo.append("Shared Library Files: ");
         if (applicationInfo.sharedLibraryFiles != null) {
             for (String libraryFile : applicationInfo.sharedLibraryFiles) {
                 if (libraryFile != null) {
-                    sb.append(libraryFile).append(" ");
+                    appInfo.append(libraryFile).append(" ");
                 }
             }
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
-        sb.append("Source Directory: ");
+        appInfo.append("Source Directory: ");
         if (applicationInfo.sourceDir != null) {
-            sb.append(applicationInfo.sourceDir);
+            appInfo.append(applicationInfo.sourceDir);
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            sb.append("Split Public Source Directories: ");
+            appInfo.append("Split Public Source Directories: ");
             if (applicationInfo.splitPublicSourceDirs != null) {
                 for (String dir : applicationInfo.splitPublicSourceDirs) {
-                    sb.append(dir);
+                    appInfo.append(dir);
                 }
             }
-            sb.append("\n");
+            appInfo.append("\n");
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            sb.append("Split Source Directories: ");
+            appInfo.append("Split Source Directories: ");
             if (applicationInfo.splitSourceDirs != null) {
                 for (String dir : applicationInfo.splitSourceDirs) {
-                    sb.append(dir);
+                    appInfo.append(dir);
                 }
             }
-            sb.append("\n");
+            appInfo.append("\n");
         }
 
-        sb.append("Target SDK Version: ")
+        appInfo.append("Target SDK Version: ")
                 .append(String.valueOf(applicationInfo.targetSdkVersion))
                 .append("\n");
 
-        sb.append("Task Affinity: ").append(applicationInfo.taskAffinity)
+        appInfo.append("Task Affinity: ").append(applicationInfo.taskAffinity)
                 .append("\n");
 
-        sb.append("Theme: ").append(String.valueOf(applicationInfo.theme))
+        appInfo.append("Theme: ").append(String.valueOf(applicationInfo.theme))
                 .append("\n");
 
-        sb.append("UI Options: ").append(String.valueOf(applicationInfo.uiOptions)).append("\n");
+        appInfo.append("UI Options: ").append(String.valueOf(applicationInfo.uiOptions)).append("\n");
 
-        sb.append("uid: ").append(String.valueOf(applicationInfo.uid)).append("\n");
+        appInfo.append("uid: ").append(String.valueOf(applicationInfo.uid)).append("\n");
 
-        sb.append("\n").append("PackageItemInfo").append("\n");
+        appInfo.append("\n").append("PackageItemInfo").append("\n");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            sb.append("Banner: ").append(String.valueOf(applicationInfo.banner)).append("\n");
+            appInfo.append("Banner: ").append(String.valueOf(applicationInfo.banner)).append("\n");
         }
 
-        sb.append("Icon: ").append(String.valueOf(applicationInfo.icon)).append("\n");
+        appInfo.append("Icon: ").append(String.valueOf(applicationInfo.icon)).append("\n");
 
-        sb.append("Label Resource: ").append(String.valueOf(applicationInfo.labelRes)).append("\n");
+        appInfo.append("Label Resource: ").append(String.valueOf(applicationInfo.labelRes)).append("\n");
 
-        sb.append("Logo: ").append(String.valueOf(applicationInfo.logo)).append("\n");
+        appInfo.append("Logo: ").append(String.valueOf(applicationInfo.logo)).append("\n");
 
         // Skip Bundle metaData
 
-        sb.append("Name: ");
+        appInfo.append("Name: ");
         if (applicationInfo.name != null) {
-            sb.append(applicationInfo.name);
+            appInfo.append(applicationInfo.name);
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
-        sb.append("Non Localized Label: ");
+        appInfo.append("Non Localized Label: ");
         if (applicationInfo.nonLocalizedLabel != null) {
-            sb.append(applicationInfo.nonLocalizedLabel);
+            appInfo.append(applicationInfo.nonLocalizedLabel);
         }
-        sb.append("\n");
+        appInfo.append("\n");
 
-        sb.append("Package Name: ");
+        appInfo.append("Package Name: ");
         if (applicationInfo.packageName != null) {
-            sb.append(applicationInfo.packageName);
+            appInfo.append(applicationInfo.packageName);
         }
-        sb.append("\n");
+        appInfo.append("\n");
+*/
 
-
-        detailTextView.setText(sb.toString());
+        return appInfo.toString();
     }
 
     private List<String> getFlags(int flags) {
@@ -330,5 +392,9 @@ public class AppInfoDetailActivity extends AppCompatActivity {
             sb.append("\t").append(string).append("\n");
         }
         return sb.toString();
+    }
+
+    private void addDelimiter(StringBuilder sb) {
+        sb.append(": ");
     }
 }

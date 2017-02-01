@@ -11,7 +11,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static final String DETAIL_VIEW = "com.lipisoft.appinfo.DETAIL";
@@ -25,16 +28,34 @@ public class MainActivity extends AppCompatActivity {
         final ListView listView = (ListView) findViewById(R.id.list);
         final PackageManager packageManager = getPackageManager();
         final List<PackageInfo> listPackageInfo = packageManager.getInstalledPackages(PackageManager.GET_META_DATA);
+        final List<ApplicationInfo> listApplicationInfo = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
 
+        Collections.sort(listApplicationInfo, new ApplicationInfo.DisplayNameComparator(packageManager));
+
+//        for (PackageInfo packageInfo: listPackageInfo) {
+//            final ApplicationInfo applicationInfo = packageInfo.applicationInfo;
+//            final Drawable icon = applicationInfo.loadIcon(packageManager);
+//
+//            final String applicationName = applicationInfo.loadLabel(packageManager).toString();
+//            final String packageName = applicationInfo.packageName;
+//            final String versionName = packageInfo.versionName;
+//
+//            mAdapter.addItem(new AppInfoItem(icon, applicationName, packageName, versionName));
+//        }
+
+        final Map<String, String> packageVersion = new HashMap<>();
         for (PackageInfo packageInfo: listPackageInfo) {
-            final ApplicationInfo applicationInfo = packageInfo.applicationInfo;
-            final Drawable icon = applicationInfo.loadIcon(packageManager);
+            packageVersion.put(packageInfo.packageName, packageInfo.versionName);
+        }
 
+        for (ApplicationInfo applicationInfo: listApplicationInfo) {
+            final Drawable icon = applicationInfo.loadIcon(packageManager);
             final String applicationName = applicationInfo.loadLabel(packageManager).toString();
             final String packageName = applicationInfo.packageName;
-            final String versionName = packageInfo.versionName;
+            final String versionName = packageVersion.get(packageName);
 
             mAdapter.addItem(new AppInfoItem(icon, applicationName, packageName, versionName));
+
         }
 
         listView.setAdapter(mAdapter);

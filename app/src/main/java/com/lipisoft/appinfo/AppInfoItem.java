@@ -2,28 +2,28 @@ package com.lipisoft.appinfo;
 
 import android.graphics.drawable.Drawable;
 
-public class AppInfoItem {
+class AppInfoItem {
     private final Drawable mIcon;
     private final String mAppName;
     private final String mPackageName;
     private final String mVersionName;
 
-    public AppInfoItem(Drawable icon, String appName, String packageName, String versionName) {
+    AppInfoItem(Drawable icon, String appName, String packageName, String versionName) {
         mIcon = icon;
         mAppName = appName;
         mPackageName = packageName;
         mVersionName = versionName;
     }
 
-    public String getAppName() {
+    String getAppName() {
         return mAppName;
     }
 
-    public String getPackageName() {
+    String getPackageName() {
         return mPackageName;
     }
 
-    public String getVersionName() {
+    String getVersionName() {
         return mVersionName;
     }
 

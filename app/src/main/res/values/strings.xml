@@ -1,4 +1,16 @@
 <resources>
-    <string name="app_name">App Info</string>
+    <string name="app_name">App Name</string>
     <string name="app_icon">App Icon</string>
+    <string name="application_name">App Info</string>
+    <string name="package_name">Package Name</string>
+    <string name="version_name">Version Name</string>
+    <string name="backup_agent_name">Backup Agent Name</string>
+    <string name="not_available">Not Available</string>
+    <string name="class_name">Class Name</string>
+    <string name="compatible_width_limit_dp">Compatible Width Limit DP</string>
+    <string name="package_not_found">Package is not found.</string>
+    <string name="description_resource_id">Description Resource ID</string>
+    <string name="data_directory">Data Directory</string>
+    <string name="device_protected_data_directory">Device Protected Data Directory</string>
+    <string name="enabled">Enabled</string>
 </resources>

@@ -8,16 +8,16 @@ import android.widget.BaseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AppInfoListAdapter extends BaseAdapter {
+class AppInfoListAdapter extends BaseAdapter {
     private Context mContext;
 
     private List<AppInfoItem> mItems = new ArrayList<>();
 
-    public AppInfoListAdapter(Context context) {
+    AppInfoListAdapter(Context context) {
         mContext = context;
     }
 
-    public void addItem(AppInfoItem it) {
+    void addItem(AppInfoItem it) {
         mItems.add(it);
     }
 
