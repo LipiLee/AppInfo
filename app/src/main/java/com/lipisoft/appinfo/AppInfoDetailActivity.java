@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.StringBuilderPrinter;
 import android.widget.ImageView;
@@ -56,6 +57,10 @@ public class AppInfoDetailActivity extends AppCompatActivity {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
 //            unbadgedIcon.setImageDrawable(applicationInfo.loadUnbadgedIcon(packageManager));
 //        }
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(applicationInfo.loadLabel(packageManager).toString());
+
     }
 
     private void addAppInfoItem(int resId, String name) {
