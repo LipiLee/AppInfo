@@ -1,74 +1,66 @@
 package com.lipisoft.appinfo;
 
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutManager;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static final String DETAIL_VIEW = "com.lipisoft.appinfo.DETAIL";
-    private final AppInfoListAdapter mAdapter = new AppInfoListAdapter(this);
+    private List<ApplicationInfo> listApplicationInfo;
+    private Map<String, String> packageVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ListView listView = (ListView) findViewById(R.id.list);
+        final RecyclerView listView = (RecyclerView) findViewById(R.id.list);
+
         final PackageManager packageManager = getPackageManager();
         final List<PackageInfo> listPackageInfo = packageManager.getInstalledPackages(PackageManager.GET_META_DATA);
-        final List<ApplicationInfo> listApplicationInfo = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        listApplicationInfo = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
 
         Collections.sort(listApplicationInfo, new ApplicationInfo.DisplayNameComparator(packageManager));
 
-//        for (PackageInfo packageInfo: listPackageInfo) {
-//            final ApplicationInfo applicationInfo = packageInfo.applicationInfo;
-//            final Drawable icon = applicationInfo.loadIcon(packageManager);
-//
-//            final String applicationName = applicationInfo.loadLabel(packageManager).toString();
-//            final String packageName = applicationInfo.packageName;
-//            final String versionName = packageInfo.versionName;
-//
-//            mAdapter.addItem(new AppInfoItem(icon, applicationName, packageName, versionName));
-//        }
-
-        final Map<String, String> packageVersion = new HashMap<>();
+        packageVersion = new ArrayMap<>();
         for (PackageInfo packageInfo: listPackageInfo) {
             packageVersion.put(packageInfo.packageName, packageInfo.versionName);
         }
 
-        for (ApplicationInfo applicationInfo: listApplicationInfo) {
-            final Drawable icon = applicationInfo.loadIcon(packageManager);
-            final String applicationName = applicationInfo.loadLabel(packageManager).toString();
-            final String packageName = applicationInfo.packageName;
-            final String versionName = packageVersion.get(packageName);
+        LayoutManager layoutManager = new LinearLayoutManager(this);
+        listView.setLayoutManager(layoutManager);
 
-            mAdapter.addItem(new AppInfoItem(icon, applicationName, packageName, versionName));
-
-        }
+        final AppInfoListAdapter mAdapter = new AppInfoListAdapter(listApplicationInfo.size());
 
         listView.setAdapter(mAdapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final AppInfoItem curItem = (AppInfoItem) mAdapter.getItem(position);
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                final AppInfoItem curItem = (AppInfoItem) mAdapter.getItem(position);
+//
+//                final Intent intent = new Intent(MainActivity.this, AppInfoDetailActivity.class);
+//                intent.putExtra(DETAIL_VIEW, curItem.getPackageName());
+//                startActivity(intent);
+//            }
+//        });
+    }
 
-                final Intent intent = new Intent(MainActivity.this, AppInfoDetailActivity.class);
-                intent.putExtra(DETAIL_VIEW, curItem.getPackageName());
-                startActivity(intent);
-            }
-        });
+    public List<ApplicationInfo> getListApplicationInfo() {
+        return listApplicationInfo;
+    }
+
+    public Map<String, String> getPackageVersion() {
+        return packageVersion;
     }
 }

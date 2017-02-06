@@ -1,52 +1,43 @@
 package com.lipisoft.appinfo;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-class AppInfoListAdapter extends BaseAdapter {
+public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoView> {
     private Context mContext;
+    private int mAppItems;
 
-    private List<AppInfoItem> mItems = new ArrayList<>();
-
-    AppInfoListAdapter(Context context) {
-        mContext = context;
+    public AppInfoListAdapter(int numberOfItems) {
+        mAppItems = numberOfItems;
     }
 
-    void addItem(AppInfoItem it) {
-        mItems.add(it);
+    public AppInfoView onCreateViewHolder(ViewGroup parent, int viewType) {
+        mContext = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view = inflater.inflate(R.layout.app_info, parent, false);
+
+        return new AppInfoView(view);
     }
 
-    public int getCount() {
-        return mItems.size();
-    }
-
-    public Object getItem(int position) {
-        return mItems.get(position);
-    }
-
-    public long getItemId(int position) {
-        return position;
-    }
-
-    public View getView(int position, View convertView, ViewGroup parent) {
-        final AppInfoView itemView;
-        if (convertView == null) {
-            itemView = new AppInfoView(mContext, mItems.get(position));
+    public void onBindViewHolder(AppInfoView appInfoViewHolder, int position) {
+        if (mContext instanceof MainActivity) {
+            MainActivity main = (MainActivity) mContext;
+            ApplicationInfo item = main.getListApplicationInfo().get(position);
+            String version = main.getPackageVersion().get(item.packageName);
+            PackageManager pm = mContext.getPackageManager();
+            appInfoViewHolder.bind(item.loadIcon(pm), item.loadLabel(pm).toString(), item.packageName, version);
         } else {
-            itemView = (AppInfoView) convertView;
-
-            itemView.setIcon(mItems.get(position).getIcon());
-            itemView.setAppName(mItems.get(position).getAppName());
-            itemView.setPackageName(mItems.get(position).getPackageName());
-            itemView.setVersionName(mItems.get(position).getVersionName());
+            Log.d("App Info", "mContext is not MainActivity.");
         }
-
-        return itemView;
     }
 
+    public int getItemCount() {
+        return mAppItems;
+    }
 }

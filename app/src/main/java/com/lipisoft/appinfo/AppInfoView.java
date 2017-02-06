@@ -2,61 +2,41 @@ package com.lipisoft.appinfo;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class AppInfoView extends LinearLayout {
+public class AppInfoView extends RecyclerView.ViewHolder {
     private Context mContext;
     private ImageView mIcon;
     private TextView mAppName;
     private TextView mPackageName;
     private TextView mVersionName;
 
-    public AppInfoView(Context context, AppInfoItem aItem) {
-        super(context);
-        mContext = context;
+    public AppInfoView(View itemView) {
+        super(itemView);
+        mContext = itemView.getContext();
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.app_info, this, true);
+        mIcon = (ImageView) itemView.findViewById(R.id.iconItem);
+        mAppName = (TextView) itemView.findViewById(R.id.app_name);
+        mPackageName = (TextView) itemView.findViewById(R.id.package_name);
+        mVersionName = (TextView) itemView.findViewById(R.id.version_name);
+    }
 
-        mIcon = (ImageView) findViewById(R.id.iconItem);
-
-        mIcon.getLayoutParams().height = getIconSize();
+    void bind(Drawable icon, String appName, String packageName, String versionName) {
         mIcon.getLayoutParams().width = getIconSize();
+        mIcon.getLayoutParams().height = getIconSize();
         mIcon.requestLayout();
-        mIcon.setImageDrawable(aItem.getIcon());
+        mIcon.setImageDrawable(icon);
 
-        mAppName = (TextView) findViewById(R.id.app_name);
-        mAppName.setText(aItem.getAppName());
-
-        mPackageName = (TextView) findViewById(R.id.package_name);
-        mPackageName.setText(aItem.getPackageName());
-
-        mVersionName = (TextView) findViewById(R.id.version_name);
-        mVersionName.setText(aItem.getVersionName());
-
-    }
-
-    public void setAppName(String appName) {
         mAppName.setText(appName);
-    }
-
-    public void setPackageName(String packageName) {
         mPackageName.setText(packageName);
-    }
-
-    public void setVersionName(String versionName) {
         mVersionName.setText(versionName);
     }
 
-    public void setIcon(Drawable icon) {
-        mIcon.setImageDrawable(icon);
-    }
-
-    protected int getIconSize() {
+    private int getIconSize() {
         DisplayMetrics metrics = new DisplayMetrics();
         ((MainActivity)mContext).getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
