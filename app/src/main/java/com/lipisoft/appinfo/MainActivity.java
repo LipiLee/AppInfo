@@ -6,9 +6,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,10 +37,12 @@ public class MainActivity extends AppCompatActivity {
             packageVersion.put(packageInfo.packageName, packageInfo.versionName);
         }
 
-        LayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(layoutManager);
 
-        final AppInfoListAdapter mAdapter = new AppInfoListAdapter(listApplicationInfo.size());
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(listView.getContext(), layoutManager.getOrientation());
+        listView.addItemDecoration(dividerItemDecoration);
+        final AppInfoListAdapter mAdapter = new AppInfoListAdapter(listApplicationInfo.size(), this, packageManager);
 
         listView.setAdapter(mAdapter);
 
