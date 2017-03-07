@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String DETAIL_VIEW = "com.lipisoft.appinfo.DETAIL";
     private List<ApplicationInfo> listApplicationInfo;
     private Map<String, String> packageVersion;
 
@@ -40,22 +39,14 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(layoutManager);
 
+        listView.setHasFixedSize(true);
+
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(listView.getContext(), layoutManager.getOrientation());
         listView.addItemDecoration(dividerItemDecoration);
+
         final AppInfoListAdapter mAdapter = new AppInfoListAdapter(listApplicationInfo.size(), this, packageManager);
 
         listView.setAdapter(mAdapter);
-
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                final AppInfoItem curItem = (AppInfoItem) mAdapter.getItem(position);
-//
-//                final Intent intent = new Intent(MainActivity.this, AppInfoDetailActivity.class);
-//                intent.putExtra(DETAIL_VIEW, curItem.getPackageName());
-//                startActivity(intent);
-//            }
-//        });
     }
 
     public List<ApplicationInfo> getListApplicationInfo() {

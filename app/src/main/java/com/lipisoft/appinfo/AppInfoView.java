@@ -1,6 +1,7 @@
 package com.lipisoft.appinfo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -8,7 +9,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class AppInfoView extends RecyclerView.ViewHolder {
+public class AppInfoView extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static final String DETAIL_VIEW = "com.lipisoft.appinfo.DETAIL";
+
     private Context mContext;
     private ImageView mIcon;
     private TextView mAppName;
@@ -23,6 +26,8 @@ public class AppInfoView extends RecyclerView.ViewHolder {
         mAppName = (TextView) itemView.findViewById(R.id.app_name);
         mPackageName = (TextView) itemView.findViewById(R.id.package_name);
         mVersionName = (TextView) itemView.findViewById(R.id.version_name);
+
+        itemView.setOnClickListener(this);
     }
 
     void bind(Drawable icon, String appName, String packageName, String versionName) {
@@ -55,6 +60,13 @@ public class AppInfoView extends RecyclerView.ViewHolder {
             return 192;
 
         return 288;
+    }
+
+    public void onClick(View v) {
+        Intent intent = new Intent(mContext, AppInfoDetailActivity.class);
+        intent.putExtra(DETAIL_VIEW, mPackageName.getText().toString());
+        MainActivity mainActivity = (MainActivity) mContext;
+        mainActivity.startActivity(intent);
     }
 
 }

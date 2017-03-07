@@ -8,9 +8,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.StringBuilderPrinter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -19,14 +19,18 @@ import java.util.List;
 public class AppInfoDetailActivity extends AppCompatActivity {
     private ApplicationInfo applicationInfo;
     private StringBuilder appInfo;
+    private ListView listView;
+    private List<String> applicationItems;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.appinfo_detail);
 
-        final TextView detailTextView = (TextView) findViewById(R.id.textView);
+        listView = (ListView) findViewById(R.id.listView);
+
         final Intent intent = getIntent();
-        final String packageName = intent.getStringExtra(MainActivity.DETAIL_VIEW);
+        final String packageName = intent.getStringExtra(AppInfoView.DETAIL_VIEW);
         final PackageInfo packageInfo;
         try {
             packageInfo = AppInfoPackageManager.getPackageInfo(this, packageName);
@@ -38,7 +42,11 @@ public class AppInfoDetailActivity extends AppCompatActivity {
 
         applicationInfo = packageInfo.applicationInfo;
 
-        detailTextView.setText(getAppInformation());
+//        detailTextView.setText(getAppInformation());
+        listView = (ListView) findViewById(R.id.listView);
+        applicationItems = new ArrayList<>();
+
+        getAppInformation();
 
 //        final ImageView banner = (ImageView) findViewById(R.id.banner);
         final ImageView icon = (ImageView) findViewById(R.id.icon);
@@ -58,18 +66,31 @@ public class AppInfoDetailActivity extends AppCompatActivity {
 //            unbadgedIcon.setImageDrawable(applicationInfo.loadUnbadgedIcon(packageManager));
 //        }
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(applicationInfo.loadLabel(packageManager).toString());
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(applicationInfo.loadLabel(packageManager).toString());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, applicationItems);
+        listView.setAdapter(adapter);
 
     }
+
+//    private void addAppInfoItem(int resId, String name) {
+//        appInfo.append(getString(resId));
+//        addDelimiter(appInfo);
+//        appInfo.append(name);
+//        appInfo.append("\n");
+//    }
 
     private void addAppInfoItem(int resId, String name) {
-        appInfo.append(getString(resId));
-        addDelimiter(appInfo);
-        appInfo.append(name);
-        appInfo.append("\n");
-    }
 
+        StringBuilder aItem = new StringBuilder();
+        aItem.append(getString(resId)).append(": ").append(name);
+
+        applicationItems.add(aItem.toString());
+
+    }
     private String getBackupAgentName() {
         if (applicationInfo.backupAgentName != null) {
             return applicationInfo.backupAgentName;
@@ -110,11 +131,11 @@ public class AppInfoDetailActivity extends AppCompatActivity {
         return String.valueOf(applicationInfo.enabled);
     }
 
-    private String getAppInformation() {
+    private void getAppInformation() {
         appInfo = new StringBuilder();
-        final StringBuilderPrinter appInfoPrinter = new StringBuilderPrinter(appInfo);
-        applicationInfo.dump(appInfoPrinter, "");
-/*
+//        final StringBuilderPrinter appInfoPrinter = new StringBuilderPrinter(appInfo);
+//        applicationInfo.dump(appInfoPrinter, "");
+
         addAppInfoItem(R.string.backup_agent_name, getBackupAgentName());
 
         addAppInfoItem(R.string.class_name, getClassName());
@@ -132,139 +153,116 @@ public class AppInfoDetailActivity extends AppCompatActivity {
         }
 
         addAppInfoItem(R.string.enabled, getEnabled());
+        // TODO handle flags
+//        addAppInfoItem("Flag: ", getFlags(applicationInfo.flags));
 
-        appInfo.append("Flag: ")
-                .append(addListString(getFlags(applicationInfo.flags)))
-                .append("\n");
+        addAppInfoItem(R.string.largest_width_limit_dp, String.valueOf(applicationInfo.largestWidthLimitDp));
 
-        appInfo.append("Largest Width Limit DP: ")
-                .append(String.valueOf(applicationInfo.largestWidthLimitDp))
-                .append("\n");
-
-        appInfo.append("Manage Space Activity Name: ");
         if (applicationInfo.manageSpaceActivityName != null) {
-            appInfo.append(applicationInfo.manageSpaceActivityName);
+            addAppInfoItem(R.string.manage_space_activity_name, applicationInfo.manageSpaceActivityName);
         }
-        appInfo.append("\n");
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            appInfo.append("Minimum SDK Version: ")
-                    .append(String.valueOf(applicationInfo.minSdkVersion))
-                    .append("\n");
+            addAppInfoItem(R.string.minimum_sdk_version, String.valueOf(applicationInfo.minSdkVersion));
         }
 
-        appInfo.append("Native Library Directory: ");
         if (applicationInfo.nativeLibraryDir != null) {
-            appInfo.append(applicationInfo.nativeLibraryDir);
+            addAppInfoItem(R.string.native_library_directory, applicationInfo.nativeLibraryDir);
         }
-        appInfo.append("\n");
 
-        appInfo.append("Permission: ");
         if (applicationInfo.permission != null) {
-            appInfo.append(applicationInfo.permission);
+            addAppInfoItem(R.string.permission, applicationInfo.permission);
         }
-        appInfo.append("\n");
 
-        appInfo.append("Process Name: ");
+
         if (applicationInfo.processName != null) {
-            appInfo.append(applicationInfo.processName);
+            addAppInfoItem(R.string.process_name, applicationInfo.processName);
         }
-        appInfo.append("\n");
 
-        appInfo.append("Public Source Directory: ");
         if (applicationInfo.publicSourceDir != null) {
-            appInfo.append(applicationInfo.publicSourceDir);
+            addAppInfoItem(R.string.public_source_directory, applicationInfo.publicSourceDir);
         }
-        appInfo.append("\n");
 
-        appInfo.append("Requires Smallest Width DP: ")
-                .append(String.valueOf(applicationInfo.requiresSmallestWidthDp))
-                .append("\n");
+        addAppInfoItem(R.string.requires_smallest_width_dp, String.valueOf(applicationInfo.requiresSmallestWidthDp));
 
-        appInfo.append("Shared Library Files: ");
-        if (applicationInfo.sharedLibraryFiles != null) {
-            for (String libraryFile : applicationInfo.sharedLibraryFiles) {
-                if (libraryFile != null) {
-                    appInfo.append(libraryFile).append(" ");
-                }
-            }
-        }
-        appInfo.append("\n");
+        // TODO shared library files
+//        appInfo.append("Shared Library Files: ");
+//        if (applicationInfo.sharedLibraryFiles != null) {
+//            for (String libraryFile : applicationInfo.sharedLibraryFiles) {
+//                if (libraryFile != null) {
+//                    appInfo.append(libraryFile).append(" ");
+//                }
+//            }
+//        }
+//        appInfo.append("\n");
 
-        appInfo.append("Source Directory: ");
         if (applicationInfo.sourceDir != null) {
-            appInfo.append(applicationInfo.sourceDir);
-        }
-        appInfo.append("\n");
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            appInfo.append("Split Public Source Directories: ");
-            if (applicationInfo.splitPublicSourceDirs != null) {
-                for (String dir : applicationInfo.splitPublicSourceDirs) {
-                    appInfo.append(dir);
-                }
-            }
-            appInfo.append("\n");
+            addAppInfoItem(R.string.source_directory, applicationInfo.sourceDir);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            appInfo.append("Split Source Directories: ");
-            if (applicationInfo.splitSourceDirs != null) {
-                for (String dir : applicationInfo.splitSourceDirs) {
-                    appInfo.append(dir);
-                }
-            }
-            appInfo.append("\n");
+        // TODO split public source directories
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            appInfo.append("Split Public Source Directories: ");
+//            if (applicationInfo.splitPublicSourceDirs != null) {
+//                for (String dir : applicationInfo.splitPublicSourceDirs) {
+//                    appInfo.append(dir);
+//                }
+//            }
+//            appInfo.append("\n");
+//        }
+
+        // TODO split source directories
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            appInfo.append("Split Source Directories: ");
+//            if (applicationInfo.splitSourceDirs != null) {
+//                for (String dir : applicationInfo.splitSourceDirs) {
+//                    appInfo.append(dir);
+//                }
+//            }
+//            appInfo.append("\n");
+//        }
+
+        addAppInfoItem(R.string.target_sdk_version, String.valueOf(applicationInfo.targetSdkVersion));
+
+        if (applicationInfo.taskAffinity != null) {
+            addAppInfoItem(R.string.task_affinity, applicationInfo.taskAffinity);
         }
 
-        appInfo.append("Target SDK Version: ")
-                .append(String.valueOf(applicationInfo.targetSdkVersion))
-                .append("\n");
+        addAppInfoItem(R.string.theme, String.valueOf(applicationInfo.theme));
 
-        appInfo.append("Task Affinity: ").append(applicationInfo.taskAffinity)
-                .append("\n");
+        addAppInfoItem(R.string.ui_options, String.valueOf(applicationInfo.uiOptions));
 
-        appInfo.append("Theme: ").append(String.valueOf(applicationInfo.theme))
-                .append("\n");
+        addAppInfoItem(R.string.uid, String.valueOf(applicationInfo.uid));
 
-        appInfo.append("UI Options: ").append(String.valueOf(applicationInfo.uiOptions)).append("\n");
-
-        appInfo.append("uid: ").append(String.valueOf(applicationInfo.uid)).append("\n");
-
-        appInfo.append("\n").append("PackageItemInfo").append("\n");
+        // TODO packageItemInfo
+//        addAppInfoItem(R.string.packageiteminfo, );
+//        appInfo.append("\n").append("PackageItemInfo").append("\n");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            appInfo.append("Banner: ").append(String.valueOf(applicationInfo.banner)).append("\n");
+            addAppInfoItem(R.string.banner, String.valueOf(applicationInfo.banner));
         }
 
-        appInfo.append("Icon: ").append(String.valueOf(applicationInfo.icon)).append("\n");
+        addAppInfoItem(R.string.icon, String.valueOf(applicationInfo.icon));
 
-        appInfo.append("Label Resource: ").append(String.valueOf(applicationInfo.labelRes)).append("\n");
+        addAppInfoItem(R.string.label_resource, String.valueOf(applicationInfo.labelRes));
 
-        appInfo.append("Logo: ").append(String.valueOf(applicationInfo.logo)).append("\n");
+        addAppInfoItem(R.string.logo, String.valueOf(applicationInfo.logo));
 
-        // Skip Bundle metaData
+        // TODO Skip Bundle metaData
 
-        appInfo.append("Name: ");
         if (applicationInfo.name != null) {
-            appInfo.append(applicationInfo.name);
+            addAppInfoItem(R.string.name, applicationInfo.name);
         }
-        appInfo.append("\n");
 
-        appInfo.append("Non Localized Label: ");
         if (applicationInfo.nonLocalizedLabel != null) {
-            appInfo.append(applicationInfo.nonLocalizedLabel);
+            addAppInfoItem(R.string.non_localized_label, applicationInfo.nonLocalizedLabel.toString());
         }
-        appInfo.append("\n");
 
-        appInfo.append("Package Name: ");
         if (applicationInfo.packageName != null) {
-            appInfo.append(applicationInfo.packageName);
+            addAppInfoItem(R.string.package_name, applicationInfo.packageName);
         }
-        appInfo.append("\n");
-*/
 
-        return appInfo.toString();
     }
 
     private List<String> getFlags(int flags) {

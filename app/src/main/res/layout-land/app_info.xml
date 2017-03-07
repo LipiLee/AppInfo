@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:orientation="horizontal"
     >
 
@@ -31,13 +31,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/app_name"
+                android:padding="2dp"
                 />
 
             <TextView
                 android:id="@+id/app_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="normal|bold"/>
+                android:textStyle="normal|bold"
+                android:padding="2dp"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -49,13 +52,16 @@
                 android:text="@string/package_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="2dp"
                 />
 
             <TextView
                 android:id="@+id/package_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="normal|bold"/>
+                android:textStyle="normal|bold"
+                android:padding="2dp"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -67,13 +73,16 @@
                 android:text="@string/version_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="2dp"
                 />
 
             <TextView
                 android:id="@+id/version_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="normal|bold"/>
+                android:textStyle="normal|bold"
+                android:padding="2dp"
+                />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

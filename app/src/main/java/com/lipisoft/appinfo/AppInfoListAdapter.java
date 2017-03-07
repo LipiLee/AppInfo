@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoView> {
     private int mAppItems;
     private Context mContext;
-    private PackageManager pm;
+    private PackageManager packageManager;
 
     public AppInfoListAdapter(int numberOfItems, Context context, PackageManager packageManager) {
         mAppItems = numberOfItems;
         mContext = context;
-        this.pm = packageManager;
+        this.packageManager = packageManager;
     }
 
     public AppInfoView onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -32,8 +32,8 @@ public class AppInfoListAdapter extends RecyclerView.Adapter<AppInfoView> {
         final MainActivity main = (MainActivity) mContext;
         final ApplicationInfo item = main.getListApplicationInfo().get(position);
         final String version = main.getPackageVersion().get(item.packageName);
-        final Drawable icon = item.loadIcon(pm);
-        final String name = item.loadLabel(pm).toString();
+        final Drawable icon = item.loadIcon(packageManager);
+        final String name = item.loadLabel(packageManager).toString();
 
         appInfoViewHolder.bind(icon, name, item.packageName, version);
     }

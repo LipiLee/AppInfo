@@ -13,4 +13,25 @@
     <string name="data_directory">Data Directory</string>
     <string name="device_protected_data_directory">Device Protected Data Directory</string>
     <string name="enabled">Enabled</string>
+    <string name="largest_width_limit_dp">Largest Width Limit DP</string>
+    <string name="manage_space_activity_name">Manage Space Activity Name</string>
+    <string name="minimum_sdk_version">Minimum SDK Version</string>
+    <string name="native_library_directory">Native Library Directory</string>
+    <string name="permission">Permission</string>
+    <string name="process_name">Process Name</string>
+    <string name="public_source_directory">Public Source Directory</string>
+    <string name="requires_smallest_width_dp">Requires Smallest Width DP</string>
+    <string name="source_directory">Source Directory</string>
+    <string name="target_sdk_version">Target SDK Version</string>
+    <string name="task_affinity">Task Affinity</string>
+    <string name="theme">Theme</string>
+    <string name="ui_options">UI Options</string>
+    <string name="uid">uid</string>
+    <string name="packageiteminfo">PackageItemInfo</string>
+    <string name="banner">Banner</string>
+    <string name="name">Name</string>
+    <string name="non_localized_label">Non Localized Label</string>
+    <string name="logo">Logo</string>
+    <string name="label_resource">Label Resource</string>
+    <string name="icon">Icon</string>
 </resources>
